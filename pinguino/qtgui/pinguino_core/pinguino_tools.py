@@ -1,5 +1,5 @@
 #! /usr/bin/python2
-#  -*- coding: UTF-8 -*-
+#  -*- coding: utf-8 -*-
 
 """-------------------------------------------------------------------------
     pinguino
@@ -50,6 +50,10 @@ else:
 HOME_DIR = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 
 
+class DoesntHaveHexFileError(Exception):
+    pass
+
+
 ########################################################################
 class PinguinoTools(Uploader):
 
@@ -59,6 +63,8 @@ class PinguinoTools(Uploader):
 
         Helper methods for preprocesing, compiling and updloading code to Pinguino.
         """
+
+        self.__hex_file__ = None
 
         # v2 dropped
         # self.NoBoot = ("icsp", 0)
@@ -200,7 +206,10 @@ class PinguinoTools(Uploader):
         filename: str
             Absolute path for *.hex generated.
         """
-        return self.__hex_file__
+        if self.__hex_file__ is not None:
+            return self.__hex_file__
+        else:
+            raise DoesntHaveHexFileError("An hex file has not been generated or was not found")
 
 
     #----------------------------------------------------------------------

@@ -16,6 +16,7 @@ from PySide2 import QtGui, QtCore, QtWidgets
 # import json
 
 from ...pinguino_core.pinguino_config import PinguinoConfig
+from ...pinguino_core.pinguino_tools import DoesntHaveHexFileError
 
 
 from .core_threads import UpdateAutocompleter  #, PinguinoRequest
@@ -860,7 +861,18 @@ class PinguinoMain(object):
     #----------------------------------------------------------------------
     @Decorator.requiere_open_files()
     def pinguino_upload(self):
-        uploaded, result = self.pinguinoAPI.upload()
+        try:
+            uploaded, result = self.pinguinoAPI.upload()
+        except DoesntHaveHexFileError as err:
+            Dialogs.error_message(
+                self,
+                QtWidgets.QApplication.translate(
+                    "Frame",
+                    "You need to compile the file before uploading. Original error: {}"
+                ).format(str(err))
+            )
+            return
+
         self.write_log(result)
         if uploaded:
             Dialogs.upload_done(self)
